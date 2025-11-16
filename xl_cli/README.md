@@ -51,43 +51,34 @@ Instalasi selesai! Sekarang Anda siap untuk menggunakan alat ini.
 
 ## Cara Penggunaan
 
-Semua perintah dijalankan dari dalam direktori `xl-cli-py`.
+Aplikasi ini sekarang menggunakan antarmuka berbasis menu yang interaktif, sehingga lebih mudah digunakan.
 
-### 1. Login
+### 1. Jalankan Aplikasi
 
-Sebelum melakukan apa pun, Anda harus login. Aplikasi akan meminta nomor telepon Anda dan kemudian OTP yang dikirimkan ke nomor tersebut.
-
-```bash
-python -m xl_cli.main login
-```
-
-### 2. Melihat Daftar Paket
-
-Setelah berhasil login, Anda dapat melihat semua paket data yang tersedia.
+Untuk memulai, jalankan perintah berikut dari dalam direktori `xl-cli-py`:
 
 ```bash
-python -m xl_cli.main list-packages
-```
-Perintah ini akan menampilkan daftar paket beserta ID dan harganya. Catat `ID` paket yang ingin Anda beli.
-
-### 3. Membeli Paket
-
-Untuk membeli paket, Anda memerlukan `ID Paket` (dari perintah sebelumnya) dan `Kode Keluarga`.
-
-Ganti `[ID_PAKET]` dan `[KODE_KELUARGA]` dengan informasi yang benar.
-
-```bash
-python -m xl_cli.main buy-package [ID_PAKET] [KODE_KELUARGA]
-```
-**Contoh:**
-```bash
-python -m xl_cli.main buy-package 12345 C0D3F4M1LY
+python -m xl_cli.main
 ```
 
-### 4. Logout
+### 2. Gunakan Menu
 
-Jika Anda ingin menghapus sesi login Anda, gunakan perintah ini.
+Setelah aplikasi berjalan, Anda akan melihat menu utama:
 
-```bash
-python -m xl_cli.main logout
 ```
+--- Menu CLI XL ---
+1. Login
+2. Tampilkan Daftar Paket
+3. Beli Paket
+4. Logout
+5. Keluar
+--------------------
+```
+
+- **Pilih `1` untuk Login:** Aplikasi akan meminta nomor telepon dan OTP Anda.
+- **Pilih `2` untuk Melihat Paket:** Setelah login, Anda dapat melihat semua paket yang tersedia.
+- **Pilih `3` untuk Membeli Paket:** Anda akan diminta untuk memasukkan ID paket dan kode keluarga.
+- **Pilih `4` untuk Logout:** Ini akan menghapus sesi login Anda.
+- **Pilih `5` untuk Keluar:** Ini akan menghentikan aplikasi.
+
+Cukup ketikkan nomor pilihan Anda dan tekan Enter, lalu ikuti petunjuk di layar.

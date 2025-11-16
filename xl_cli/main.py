@@ -1,89 +1,110 @@
 # xl_cli/main.py
 
-import click
 from .api import XLAPIClient
 from .session import save_session, clear_session, is_logged_in
 
-@click.group()
-def cli():
-    """A CLI tool to interact with the XL Axiata API."""
-    pass
+def display_menu():
+    """Menampilkan menu utama."""
+    print("\n--- Menu CLI XL ---")
+    print("1. Login")
+    print("2. Tampilkan Daftar Paket")
+    print("3. Beli Paket")
+    print("4. Logout")
+    print("5. Keluar")
+    print("--------------------")
 
-@cli.command()
-def login():
-    """Logs in to the XL service by requesting and validating an OTP."""
+def handle_login():
+    """Menangani proses login pengguna."""
     if is_logged_in():
-        click.echo("You are already logged in.")
+        print("Anda sudah login.")
         return
 
-    msisdn = click.prompt("Please enter your phone number (e.g., 81234567890)", type=str)
+    msisdn = input("Masukkan nomor telepon Anda (misal: 81234567890): ")
 
     client = XLAPIClient()
 
-    click.echo(f"Requesting OTP for {msisdn}...")
+    print(f"Meminta OTP untuk {msisdn}...")
     otp_response = client.request_otp(msisdn)
 
     if not otp_response or otp_response.get('success') is False:
-        click.echo("Failed to request OTP. Please check the number and try again.")
+        print("Gagal meminta OTP. Silakan periksa nomor dan coba lagi.")
         return
 
-    click.echo("OTP has been sent to your number.")
+    print("OTP telah dikirim ke nomor Anda.")
 
-    otp_code = click.prompt("Please enter the OTP you received", type=str)
+    otp_code = input("Masukkan OTP yang Anda terima: ")
 
-    click.echo("Validating OTP...")
+    print("Memvalidasi OTP...")
     token_response = client.validate_otp(msisdn, otp_code)
 
-    # Assuming a successful response contains a 'token'
     if token_response and 'token' in token_response:
         save_session(token_response['token'])
-        click.echo("Login successful!")
+        print("Login berhasil!")
     else:
-        click.echo("Login failed. The OTP may be incorrect or expired.")
+        print("Login gagal. OTP mungkin salah atau sudah kedaluwarsa.")
 
-@cli.command(name="list-packages")
-def list_packages():
-    """Lists available data packages."""
+def handle_list_packages():
+    """Menangani penampilan daftar paket yang tersedia."""
     if not is_logged_in():
-        click.echo("You must be logged in to view packages. Please run 'login' first.")
+        print("Anda harus login terlebih dahulu. Silakan pilih menu 'Login'.")
         return
 
     client = XLAPIClient()
-    click.echo("Fetching packages...")
+    print("Mengambil daftar paket...")
     packages = client.get_packages()
 
-    if packages and isinstance(packages, list):
-        # Assuming packages is a list of dicts with 'id', 'name', 'price'
+    if packages and isinstance(packages, list) and len(packages) > 0:
+        print("\n--- Paket Tersedia ---")
         for pkg in packages:
-            click.echo(f"ID: {pkg.get('id', 'N/A')} | Name: {pkg.get('name', 'N/A')} | Price: {pkg.get('price', 'N/A')}")
+            print(f"ID: {pkg.get('id', 'N/A')} | Nama: {pkg.get('name', 'N/A')} | Harga: {pkg.get('price', 'N/A')}")
+        print("--------------------")
     else:
-        click.echo("Could not retrieve packages or no packages are available.")
+        print("Tidak dapat mengambil daftar paket atau tidak ada paket yang tersedia.")
 
-@cli.command(name="buy-package")
-@click.argument("package_id")
-@click.argument("family_code")
-def buy_package(package_id, family_code):
-    """Purchases a package using a specific package ID and family code."""
+def handle_buy_package():
+    """Menangani proses pembelian paket."""
     if not is_logged_in():
-        click.echo("You must be logged in to purchase a package. Please run 'login' first.")
+        print("Anda harus login terlebih dahulu. Silakan pilih menu 'Login'.")
         return
 
+    package_id = input("Masukkan ID Paket yang ingin dibeli: ")
+    family_code = input("Masukkan Kode Keluarga: ")
+
     client = XLAPIClient()
-    click.echo(f"Attempting to purchase package {package_id} with family code...")
+    print(f"Mencoba membeli paket {package_id}...")
 
     purchase_response = client.purchase_package(package_id, family_code)
 
     if purchase_response and purchase_response.get('success'):
-        click.echo("Package purchased successfully!")
-        click.echo(f"Transaction ID: {purchase_response.get('transactionId', 'N/A')}")
+        print("Pembelian paket berhasil!")
+        print(f"ID Transaksi: {purchase_response.get('transactionId', 'N/A')}")
     else:
-        error_message = purchase_response.get('message', 'An unknown error occurred.')
-        click.echo(f"Failed to purchase package. Reason: {error_message}")
+        error_message = purchase_response.get('message', 'Terjadi kesalahan yang tidak diketahui.')
+        print(f"Gagal membeli paket. Alasan: {error_message}")
 
-@cli.command()
-def logout():
-    """Logs out by clearing the current session."""
+def handle_logout():
+    """Menangani logout pengguna."""
     clear_session()
 
+def main():
+    """Fungsi utama untuk menjalankan loop menu."""
+    while True:
+        display_menu()
+        choice = input("Pilih menu (1-5): ")
+
+        if choice == '1':
+            handle_login()
+        elif choice == '2':
+            handle_list_packages()
+        elif choice == '3':
+            handle_buy_package()
+        elif choice == '4':
+            handle_logout()
+        elif choice == '5':
+            print("Terima kasih telah menggunakan XL CLI. Sampai jumpa!")
+            break
+        else:
+            print("Pilihan tidak valid. Silakan masukkan angka dari 1 hingga 5.")
+
 if __name__ == "__main__":
-    cli()
+    main()
