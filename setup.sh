@@ -9,9 +9,26 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 
 echo -e "${GREEN}Starting XL CLI setup...${NC}"
+PROJECT_DIR=$(pwd)
 
-# --- Step 1: Install Dependencies ---
-echo -e "\n${YELLOW}Step 1: Installing Python dependencies...${NC}"
+# --- Step 1: Create config file if it doesn't exist ---
+CONFIG_FILE="$PROJECT_DIR/xl_cli/config.json"
+TEMPLATE_FILE="$PROJECT_DIR/xl_cli/config.json.template"
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo -e "\n${YELLOW}Step 1: Configuration file not found. Creating from template...${NC}"
+    if cp "$TEMPLATE_FILE" "$CONFIG_FILE"; then
+        echo -e "${GREEN}Created 'config.json'. You can edit this file later to update your API keys.${NC}"
+    else
+        echo -e "${RED}Failed to create configuration file.${NC}"
+        exit 1
+    fi
+else
+    echo -e "\n${GREEN}Step 1: Existing 'config.json' found. Skipping creation.${NC}"
+fi
+
+# --- Step 2: Install Dependencies ---
+echo -e "\n${YELLOW}Step 2: Installing Python dependencies...${NC}"
 if pip install -r xl_cli/requirements.txt; then
     echo -e "${GREEN}Dependencies installed successfully.${NC}"
 else
@@ -19,46 +36,23 @@ else
     exit 1
 fi
 
-# --- Step 2: Prepare the executable script ---
-echo -e "\n${YELLOW}Step 2: Preparing the 'xl' command...${NC}"
-
-# Get the absolute path to the current directory
-PROJECT_DIR=$(pwd)
+# --- Step 3: Prepare the executable script ---
+echo -e "\n${YELLOW}Step 3: Preparing the 'xl' command...${NC}"
 EXECUTABLE_PATH="$PROJECT_DIR/xl"
 PYTHON_COMMAND="python3 -m xl_cli.main \"\$@\""
 
-# Modify the 'xl' script to use the absolute path of the project
-# This ensures it can be run from any directory
-# We use a temporary file to avoid issues with sed's in-place editing on some systems
 sed "s|python3 -m xl_cli.main \"\$@\"|cd $PROJECT_DIR \&\& $PYTHON_COMMAND|" "$EXECUTABLE_PATH" > "$EXECUTABLE_PATH.tmp" && mv "$EXECUTABLE_PATH.tmp" "$EXECUTABLE_PATH"
-
-if [ $? -eq 0 ]; then
-    echo "Executable script configured."
-else
-    echo -e "${RED}Failed to configure the executable script.${NC}"
-    exit 1
-fi
-
-# Make the script executable
 chmod +x "$EXECUTABLE_PATH"
-if [ $? -eq 0 ]; then
-    echo "Executable permissions set."
-else
-    echo -e "${RED}Failed to set executable permissions.${NC}"
-    exit 1
-fi
 
-# --- Step 3: Move the executable to Termux bin directory ---
-# This makes the 'xl' command available system-wide in Termux
+# --- Step 4: Move the executable to Termux bin directory ---
 TERMUX_BIN_DIR="/data/data/com.termux/files/usr/bin"
-echo -e "\n${YELLOW}Step 3: Installing the 'xl' command to ${TERMUX_BIN_DIR}...${NC}"
+echo -e "\n${YELLOW}Step 4: Installing the 'xl' command to ${TERMUX_BIN_DIR}...${NC}"
 
 if [ -d "$TERMUX_BIN_DIR" ]; then
-    mv "$EXECUTABLE_PATH" "$TERMUX_BIN_DIR/xl"
-    if [ $? -eq 0 ]; then
+    if mv "$EXECUTABLE_PATH" "$TERMUX_BIN_DIR/xl"; then
         echo -e "${GREEN}Command 'xl' installed successfully!${NC}"
     else
-        echo -e "${RED}Failed to move the 'xl' command. You may need to run this with higher privileges.${NC}"
+        echo -e "${RED}Failed to move the 'xl' command. If it exists, it may be in use.${NC}"
         exit 1
     fi
 else
@@ -70,5 +64,7 @@ fi
 echo -e "\n${GREEN}Setup is complete!${NC}"
 echo "You can now run the application from anywhere by simply typing:"
 echo -e "${YELLOW}xl${NC}\n"
+echo "If you encounter a '403 Forbidden' error, it means your API keys in 'xl_cli/config.json' are likely expired."
+echo "Please update them with new ones."
 
 exit 0
