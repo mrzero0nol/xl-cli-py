@@ -1,0 +1,10 @@
+#!/bin/bash
+# Wrapper script to run the XL CLI Python application.
+
+# The installer (setup.sh) will move this file to a directory in the user's PATH.
+# It will also embed the absolute path to the project directory to ensure the
+# Python module can be found and executed from anywhere.
+
+# The line below is a placeholder that will be replaced by the setup script.
+# For now, it assumes you are running it from the project root.
+python3 -m xl_cli.main "$@"

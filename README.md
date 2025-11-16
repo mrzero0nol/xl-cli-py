@@ -2,68 +2,49 @@
 
 Ini adalah alat antarmuka baris perintah (CLI) untuk berinteraksi dengan API XL Axiata. Anda dapat menggunakannya untuk login, melihat daftar paket data, dan membeli paket menggunakan kode keluarga.
 
-## Instalasi di Termux
+## Instalasi Super Cepat di Termux
 
-Panduan ini akan membantu Anda menginstal dan menjalankan alat ini di Termux, bahkan jika Anda seorang pemula. Cukup salin dan tempel (copy-paste) perintah-perintah berikut satu per satu.
+Lupakan langkah-langkah rumit. Cukup ikuti ini untuk menginstal semuanya secara otomatis.
 
-### Langkah 1: Siapkan Termux
+### Langkah 1: Siapkan Termux & Instal Git
 
-Pertama, pastikan Termux Anda diperbarui.
+Jika Anda belum melakukannya, siapkan Termux dan instal `git`.
 
 ```bash
 pkg update && pkg upgrade
-```
-
-### Langkah 2: Instal Git dan Python
-
-Anda memerlukan `git` untuk mengunduh kode dari repositori dan `python` untuk menjalankan aplikasi.
-
-```bash
 pkg install git python
 ```
 
-### Langkah 3: Unduh (Clone) Repositori
+### Langkah 2: Unduh dan Jalankan Instalasi
 
-Sekarang, unduh kode aplikasi ini dari GitHub.
+Salin tiga baris perintah ini. Mereka akan mengunduh repositori, masuk ke direktorinya, dan menjalankan skrip instalasi otomatis.
 
 ```bash
 git clone https://github.com/example/xl-cli-py.git
+cd xl-cli-py
+bash setup.sh
 ```
 *(Catatan: Ganti URL di atas dengan URL repositori yang sebenarnya jika berbeda.)*
 
-### Langkah 4: Masuk ke Direktori Proyek
-
-Setelah pengunduhan selesai, masuklah ke direktori yang baru saja dibuat.
-
-```bash
-cd xl-cli-py
-```
-
-### Langkah 5: Instal Ketergantungan (Dependencies)
-
-Aplikasi ini membutuhkan beberapa pustaka Python agar dapat berfungsi. Perintah ini akan menginstalnya secara otomatis dari file `requirements.txt`.
-
-```bash
-pip install -r xl_cli/requirements.txt
-```
-
-Instalasi selesai! Sekarang Anda siap untuk menggunakan alat ini.
+Skrip `setup.sh` akan secara otomatis:
+- Menginstal semua pustaka Python yang diperlukan.
+- Mengkonfigurasi dan menginstal perintah `xl`.
 
 ## Cara Penggunaan
 
-Aplikasi ini sekarang menggunakan antarmuka berbasis menu yang interaktif, sehingga lebih mudah digunakan.
+Setelah instalasi berhasil, Anda tidak perlu lagi berada di dalam folder proyek. Anda dapat menjalankan aplikasi dari direktori mana pun.
 
 ### 1. Jalankan Aplikasi
 
-Untuk memulai, jalankan perintah berikut dari dalam direktori `xl-cli-py`:
+Cukup ketik perintah berikut di Termux:
 
 ```bash
-python -m xl_cli.main
+xl
 ```
 
 ### 2. Gunakan Menu
 
-Setelah aplikasi berjalan, Anda akan melihat menu utama:
+Aplikasi akan menampilkan menu interaktif. Gunakan angka untuk menavigasi:
 
 ```
 --- Menu CLI XL ---
@@ -80,5 +61,3 @@ Setelah aplikasi berjalan, Anda akan melihat menu utama:
 - **Pilih `3` untuk Membeli Paket:** Anda akan diminta untuk memasukkan ID paket dan kode keluarga.
 - **Pilih `4` untuk Logout:** Ini akan menghapus sesi login Anda.
 - **Pilih `5` untuk Keluar:** Ini akan menghentikan aplikasi.
-
-Cukup ketikkan nomor pilihan Anda dan tekan Enter, lalu ikuti petunjuk di layar.
